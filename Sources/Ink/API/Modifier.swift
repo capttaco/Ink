@@ -53,5 +53,10 @@ public extension Modifier {
         case lists
         case paragraphs
         case tables
+        
+        // FormattedText modifiers
+        case bold
+        case italic
+        case strikethrough
     }
 }

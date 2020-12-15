@@ -27,15 +27,58 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
 
     func html(usingURLs urls: NamedURLCollection,
               modifiers: ModifierCollection) -> String {
-        components.reduce(into: "") { string, component in
+        
+        var string = ""
+        var markers: [TextStyleMarker] = []
+        var markedText: [String] = []
+        for component in components {
             switch component {
             case .linebreak:
                 string.append("<br>")
+                
             case .text(let text):
                 string.append(String(text))
+                
+                // Capture any text formatted by style markers
+                // (stored in stacks, to handle nested styles)
+    
+                if !markers.isEmpty {
+                    markedText[markedText.count-1].append(String(text))
+                }
+            
             case .styleMarker(let marker):
                 let html = marker.html(usingURLs: urls, modifiers: modifiers)
                 string.append(html)
+                
+                
+                // Detect closing formatter tags, so the text they modified can be sent
+                // along to parser modifiers, just like other modifiable blocks. Each block
+                // must be detected, along with the text it formats.
+                
+                // 1. Detect open block
+                guard let current = markers.last, current.style == marker.style else {
+                    if marker.kind == .opening {
+                        markedText.append("")
+                        print("*** \(marker.style) marker OPENED")
+                    }
+                    markers.append(marker)
+                    continue
+                }
+                
+                // 2. Handle closed block, including firing the modifier
+                let text = current.rawMarkers + markedText.popLast()! + marker.rawMarkers
+                modifiers.applyModifiers(for: current.style.target) { modifier in
+                    string = modifier.closure((string, Substring(text)))
+                }
+                print("*** \(marker.style) marked CLOSED with text: \(text)")
+                let _ = markers.popLast()
+                
+                // 3. If the markers are nested, pass the contents of any inner block to
+                //    the wrapping parent block.
+                if !markers.isEmpty {
+                    markedText[markedText.count-1].append(text)
+                }
+                
             case .fragment(let fragment, let rawString):
                 let html = fragment.html(
                     usingURLs: urls,
@@ -46,6 +89,7 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
                 string.append(html)
             }
         }
+        return string
     }
 
     func plainText() -> String {

@@ -19,3 +19,13 @@ extension TextStyle {
         }
     }
 }
+
+extension TextStyle {
+    var target: Modifier.Target {
+        switch self {
+        case .italic: return Modifier.Target.italic
+        case .bold: return Modifier.Target.bold
+        case .strikethrough: return Modifier.Target.strikethrough
+        }
+    }
+}
