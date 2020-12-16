@@ -11,6 +11,8 @@ internal struct CodeBlock: Fragment {
 
     private var language: Substring
     private var code: String
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> CodeBlock {
         let startingMarkerCount = reader.readCount(of: marker)
@@ -44,7 +46,7 @@ internal struct CodeBlock: Fragment {
             reader.advanceIndex()
         }
 
-        return CodeBlock(language: language, code: code)
+        return CodeBlock(language: language, code: code, characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

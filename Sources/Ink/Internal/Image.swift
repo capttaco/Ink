@@ -8,10 +8,12 @@ internal struct Image: Fragment {
     var modifierTarget: Modifier.Target { .images }
 
     private var link: Link
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Image {
         try reader.read("!")
-        return try Image(link: .read(using: &reader))
+        return try Image(link: .read(using: &reader), characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

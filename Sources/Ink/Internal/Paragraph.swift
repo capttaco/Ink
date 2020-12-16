@@ -8,9 +8,11 @@ internal struct Paragraph: Fragment {
     var modifierTarget: Modifier.Target { .paragraphs }
 
     private var text: FormattedText
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) -> Paragraph {
-        return Paragraph(text: .read(using: &reader))
+        return Paragraph(text: .read(using: &reader), characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

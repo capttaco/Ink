@@ -10,6 +10,8 @@ internal struct List: Fragment {
     private var listMarker: Character
     private var kind: Kind
     private var items = [Item]()
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> List {
         try read(using: &reader, indentationLength: 0)
@@ -27,10 +29,10 @@ internal struct List: Fragment {
             let firstNumber = Int(firstNumberString) ?? 1
             
             let listMarker = try reader.readCharacter(in: List.orderedListMarkers)
-            list = List(listMarker: listMarker, kind: .ordered(firstNumber: firstNumber))
+            list = List(listMarker: listMarker, kind: .ordered(firstNumber: firstNumber), characterRange: (reader.currentIndex..<reader.currentIndex))
         } else {
             let listMarker = reader.currentCharacter
-            list = List(listMarker: listMarker, kind: .unordered)
+            list = List(listMarker: listMarker, kind: .unordered, characterRange: (reader.currentIndex..<reader.currentIndex))
         }
 
         reader.moveToIndex(startIndex)

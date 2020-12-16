@@ -9,6 +9,8 @@ internal struct Link: Fragment {
 
     var target: Target
     var text: FormattedText
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Link {
         try reader.read("[")
@@ -20,11 +22,11 @@ internal struct Link: Fragment {
         if reader.currentCharacter == "(" {
             reader.advanceIndex()
             let url = try reader.read(until: ")")
-            return Link(target: .url(url), text: text)
+            return Link(target: .url(url), text: text, characterRange: (reader.currentIndex..<reader.currentIndex))
         } else {
             try reader.read("[")
             let reference = try reader.read(until: "]")
-            return Link(target: .reference(reference), text: text)
+            return Link(target: .reference(reference), text: text, characterRange: (reader.currentIndex..<reader.currentIndex))
         }
     }
 

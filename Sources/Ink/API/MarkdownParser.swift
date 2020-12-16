@@ -52,7 +52,9 @@ public struct MarkdownParser {
 
             do {
                 if metadata == nil, fragments.isEmpty, reader.currentCharacter == "-" {
-                    if let parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
+                    let startIndex = reader.currentIndex
+                    if var parsedMetadata = try? Metadata.readOrRewind(using: &reader) {
+                        parsedMetadata.characterRange = (startIndex..<reader.currentIndex)
                         metadata = parsedMetadata.applyingModifiers(modifiers)
                         continue
                     }
@@ -122,8 +124,10 @@ private extension MarkdownParser {
     func makeFragment(using closure: (inout Reader) throws -> Fragment,
                       reader: inout Reader) rethrows -> ParsedFragment {
         let startIndex = reader.currentIndex
-        let fragment = try closure(&reader)
-        let rawString = reader.characters(in: startIndex..<reader.currentIndex)
+        var fragment = try closure(&reader)
+        let range = (startIndex..<reader.currentIndex)
+        fragment.characterRange = range
+        let rawString = reader.characters(in: range)
         return ParsedFragment(fragment: fragment, rawString: rawString)
     }
 

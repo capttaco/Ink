@@ -9,6 +9,8 @@ internal struct Heading: Fragment {
     var level: Int
 
     private var text: FormattedText
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Heading {
         let level = reader.readCount(of: "#")
@@ -16,7 +18,7 @@ internal struct Heading: Fragment {
         try reader.readWhitespaces()
         let text = FormattedText.read(using: &reader, terminators: ["\n"])
 
-        return Heading(level: level, text: text)
+        return Heading(level: level, text: text, characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

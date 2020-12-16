@@ -67,8 +67,10 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
                 
                 // 2. Handle closed block, including firing the modifier
                 let text = current.rawMarkers + markedText.popLast()! + marker.rawMarkers
+                let totalRange = current.characterRange.lowerBound..<marker.characterRange.upperBound
+                
                 modifiers.applyModifiers(for: current.style.target) { modifier in
-                    string = modifier.closure((string, Substring(text)))
+                    string = modifier.closure((string, Substring(text), totalRange))
                 }
                 print("*** \(marker.style) marked CLOSED with text: \(text)")
                 let _ = markers.popLast()

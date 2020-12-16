@@ -6,4 +6,6 @@
 
 internal protocol Modifiable {
     var modifierTarget: Modifier.Target { get }
+    
+    var characterRange: Range<String.Index> { get set }
 }

@@ -8,6 +8,8 @@ internal struct Blockquote: Fragment {
     var modifierTarget: Modifier.Target { .blockquotes }
 
     private var text: FormattedText
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Blockquote {
         try reader.read(">")
@@ -18,7 +20,7 @@ internal struct Blockquote: Fragment {
         while !reader.didReachEnd {
             switch reader.currentCharacter {
             case \.isNewline:
-                return Blockquote(text: text)
+                return Blockquote(text: text, characterRange: (reader.currentIndex..<reader.currentIndex))
             case ">":
                 reader.advanceIndex()
             default:
@@ -28,7 +30,7 @@ internal struct Blockquote: Fragment {
             text.append(FormattedText.readLine(using: &reader))
         }
 
-        return Blockquote(text: text)
+        return Blockquote(text: text, characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

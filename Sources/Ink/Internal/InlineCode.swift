@@ -9,6 +9,8 @@ struct InlineCode: Fragment {
 
     private var code: String
 
+    var characterRange: Range<String.Index>
+    
     static func read(using reader: inout Reader) throws -> InlineCode {
         try reader.read("`")
         var code = ""
@@ -19,7 +21,7 @@ struct InlineCode: Fragment {
                 throw Reader.Error()
             case "`":
                 reader.advanceIndex()
-                return InlineCode(code: code)
+                return InlineCode(code: code, characterRange: (reader.currentIndex..<reader.currentIndex))
             default:
                 if let escaped = reader.currentCharacter.escaped {
                     code.append(escaped)

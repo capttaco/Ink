@@ -8,6 +8,8 @@ internal struct HTML: Fragment {
     var modifierTarget: Modifier.Target { .html }
 
     private var string: Substring
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> HTML {
         let startIndex = reader.currentIndex
@@ -15,7 +17,7 @@ internal struct HTML: Fragment {
 
         guard !rootElement.isSelfClosing else {
             let html = reader.characters(in: startIndex..<reader.currentIndex)
-            return HTML(string: html)
+            return HTML(string: html, characterRange: (reader.currentIndex..<reader.currentIndex))
         }
 
         var rootElementCount = 1
@@ -48,7 +50,7 @@ internal struct HTML: Fragment {
         }
 
         let html = reader.characters(in: startIndex..<reader.currentIndex)
-        return HTML(string: html)
+        return HTML(string: html, characterRange: startIndex..<reader.currentIndex)
     }
 
     func html(usingURLs urls: NamedURLCollection,

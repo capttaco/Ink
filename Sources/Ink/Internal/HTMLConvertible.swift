@@ -16,7 +16,7 @@ extension HTMLConvertible where Self: Modifiable {
         var html = self.html(usingURLs: urls, modifiers: modifiers)
 
         modifiers.applyModifiers(for: modifierTarget) { modifier in
-            html = modifier.closure((html, rawString))
+            html = modifier.closure((html, rawString, characterRange))
         }
 
         return html

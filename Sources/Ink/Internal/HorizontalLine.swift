@@ -6,6 +6,8 @@
 
 internal struct HorizontalLine: Fragment {
     var modifierTarget: Modifier.Target { .horizontalLines }
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> HorizontalLine {
         guard reader.currentCharacter.isAny(of: ["-", "*"]) else {
@@ -14,7 +16,7 @@ internal struct HorizontalLine: Fragment {
 
         try require(reader.readCount(of: reader.currentCharacter) > 2)
         try require(reader.readUntilEndOfLine().isEmpty)
-        return HorizontalLine()
+        return HorizontalLine(characterRange: (reader.currentIndex..<reader.currentIndex))
     }
 
     func html(usingURLs urls: NamedURLCollection,

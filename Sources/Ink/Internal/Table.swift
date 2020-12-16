@@ -13,9 +13,11 @@ struct Table: Fragment {
     private var rows = [Row]()
     private var columnCount = 0
     private var columnAlignments = [ColumnAlignment]()
+    
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Table {
-        var table = Table()
+        var table = Table(characterRange: reader.currentIndex..<reader.currentIndex)
 
         while !reader.didReachEnd, !reader.currentCharacter.isNewline {
             guard reader.currentCharacter == "|" else {

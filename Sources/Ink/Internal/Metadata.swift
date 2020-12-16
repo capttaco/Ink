@@ -6,12 +6,13 @@
 
 internal struct Metadata: Readable {
     var values = [String : String]()
+    var characterRange: Range<String.Index>
 
     static func read(using reader: inout Reader) throws -> Metadata {
         try require(reader.readCount(of: "-") == 3)
         try reader.read("\n")
 
-        var metadata = Metadata()
+        var metadata = Metadata(characterRange: (reader.currentIndex..<reader.currentIndex))
         var lastKey: String?
 
         while !reader.didReachEnd {
@@ -48,7 +49,7 @@ internal struct Metadata: Readable {
 
         modifiers.applyModifiers(for: .metadataKeys) { modifier in
             for (key, value) in modified.values {
-                let newKey = modifier.closure((key, Substring(key)))
+                let newKey = modifier.closure((key, Substring(key), characterRange))
                 modified.values[key] = nil
                 modified.values[newKey] = value
             }
@@ -56,7 +57,7 @@ internal struct Metadata: Readable {
 
         modifiers.applyModifiers(for: .metadataValues) { modifier in
             modified.values = modified.values.mapValues { value in
-                modifier.closure((value, Substring(value)))
+                modifier.closure((value, Substring(value), characterRange))
             }
         }
 
