@@ -59,7 +59,7 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
                 guard let current = markers.last, current.style == marker.style else {
                     if marker.kind == .opening {
                         markedText.append("")
-                        print("*** \(marker.style) marker OPENED")
+//                        print("*** \(marker.style) marker OPENED")
                     }
                     markers.append(marker)
                     continue
@@ -72,7 +72,7 @@ internal struct FormattedText: Readable, HTMLConvertible, PlainTextConvertible {
                 modifiers.applyModifiers(for: current.style.target) { modifier in
                     string = modifier.closure((string, Substring(text), totalRange))
                 }
-                print("*** \(marker.style) marked CLOSED with text: \(text)")
+//                print("*** \(marker.style) marked CLOSED with text: \(text)")
                 let _ = markers.popLast()
                 
                 // 3. If the markers are nested, pass the contents of any inner block to

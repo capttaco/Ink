@@ -5,7 +5,14 @@
 */
 
 internal struct List: Fragment {
-    var modifierTarget: Modifier.Target { .lists }
+    var modifierTarget: Modifier.Target {
+        switch kind {
+        case .ordered(_):
+            return .orderedLists
+        case .unordered:
+            return .unorderedLists
+        }
+    }
 
     private var listMarker: Character
     private var kind: Kind

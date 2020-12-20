@@ -50,7 +50,9 @@ public extension Modifier {
         case images
         case inlineCode
         case links
-        case lists
+//        case lists
+        case unorderedLists
+        case orderedLists
         case paragraphs
         case tables
         
