@@ -55,6 +55,7 @@ public extension Modifier {
         case paragraphs
         case tables
         case linkDeclaration
+        case comments
         
         // FormattedText modifiers
         case bold
