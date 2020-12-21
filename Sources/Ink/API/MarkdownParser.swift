@@ -43,6 +43,7 @@ public struct MarkdownParser {
         var reader = Reader(string: markdown)
         var fragments = [ParsedFragment]()
         var urlsByName = [String : URL]()
+        var footnotes = [URLDeclaration]()
         var titleHeading: Heading?
         var metadata: Metadata?
 
@@ -63,6 +64,9 @@ public struct MarkdownParser {
                 guard reader.currentCharacter != "[" else {
                     let declaration = try URLDeclaration.readOrRewind(using: &reader)
                     urlsByName[declaration.name] = declaration.url
+                    if declaration.footnoteText != nil {
+                        footnotes.append(declaration)
+                    }
                     continue
                 }
 
@@ -97,7 +101,7 @@ public struct MarkdownParser {
 
         let urls = NamedURLCollection(urlsByName: urlsByName)
 
-        let html = fragments.reduce(into: "") { result, wrapper in
+        var html = fragments.reduce(into: "") { result, wrapper in
             let html = wrapper.fragment.html(
                 usingURLs: urls,
                 rawString: wrapper.rawString,
@@ -105,6 +109,16 @@ public struct MarkdownParser {
             )
 
             result.append(html)
+        }
+        
+        if footnotes.count > 0 {
+            let notes = footnotes.reduce(into: "") { result, note in
+                let html = note.html(usingURLs: urls, modifiers: modifiers)
+                result.append(html)
+            }
+            
+            html.append("<hr class=\"footnotes-sep\">")
+            html.append("<section class=\"footnotes\"><ol class=\"footnotes-list\">\(notes)</ol></section>")
         }
 
         return Markdown(

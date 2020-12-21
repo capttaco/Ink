@@ -50,11 +50,11 @@ public extension Modifier {
         case images
         case inlineCode
         case links
-//        case lists
         case unorderedLists
         case orderedLists
         case paragraphs
         case tables
+        case linkDeclaration
         
         // FormattedText modifiers
         case bold
