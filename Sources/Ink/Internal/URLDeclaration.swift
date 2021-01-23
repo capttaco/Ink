@@ -15,10 +15,11 @@ internal struct URLDeclaration: Fragment {
     static func read(using reader: inout Reader) throws -> Self {
         var isFootnote = false
         try reader.read("[")
-        if reader.currentCharacter == "^" {
+        let name = try reader.read(until: "]")
+        if name.first == "^" {
             isFootnote = true
         }
-        let name = try reader.read(until: "]")
+        
         try reader.read(":")
         try reader.readWhitespaces()
         if isFootnote {

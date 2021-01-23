@@ -13,7 +13,7 @@ final class ModifierTests: XCTestCase {
         var allMarkdown = [Substring]()
 
         let parser = MarkdownParser(modifiers: [
-            Modifier(target: .paragraphs) { html, markdown in
+            Modifier(target: .paragraphs) { html, markdown, _ in
                 allHTML.append(html)
                 allMarkdown.append(markdown)
                 return html
